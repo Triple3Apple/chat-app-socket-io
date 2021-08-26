@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css" />
+    <title>Socket.io Chat App</title>
+    <!-- <style>
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+      #input:focus {
+        outline: none;
+      }
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #messages > li {
+        padding: 0.5rem 1rem;
+      }
+      #messages > li:nth-child(odd) {
+        background: #efefef;
+      }
+    </style> -->
+  </head>
+  <body>
+    <div class="login-container-bg">
+      <div class="login-container">
+        <form id="login-form" action="">
+          <label for="display-name">Display Name: </label>
+          <input
+            type="text"
+            name="display-name"
+            id="display-name"
+            placeholder="John23"
+          />
+          <button>Start Chatting</button>
+        </form>
+      </div>
+    </div>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      //   var socket = io();
+
+      //   var form = document.getElementById("form");
+      //   var input = document.getElementById("input");
+
+      //   // For sending a chat message event
+      //   //   form.addEventListener("submit", (e) => {
+      //   //     e.preventDefault();
+      //   //     if (input.value) {
+      //   //       socket.emit("chat message", input.value);
+      //   //       input.value = ";";
+      //   //     }
+      //   //   });
+
+      //   //   socket.on('chat message', (msg) {
+      //   //       var item = document.createElement('li');
+      //   //       item.textContent = msg;
+      //   //       messages.appendChild(item);
+      //   //       window.scrollTo(0, document.body.scrollHeight);
+      //   //   });
+
+      var socket = io();
+
+      var messages = document.getElementById("messages");
+      var form = document.getElementById("form");
+      var input = document.getElementById("input");
+
+      var loginForm = document.getElementById("login-form");
+      var nameInput = document.getElementById("display-name");
+      var loginContainer =
+        document.getElementsByClassName("login-container-bg")[0];
+
+      var user = {
+        displayName: null,
+        id: null,
+      };
+
+      // Login event listener
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        console.log("login button pressed");
+        let name = nameInput.value;
+        if (name) {
+          socket.emit("validate name", name);
+          //   loginContainer.style.display = "none";
+        }
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit("chat message", input.value);
+          input.value = "";
+        }
+      });
+
+      socket.on("chat message", (msg) => {
+        var item = document.createElement("li");
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      // Name valid event from server
+      socket.on("validation success", (msg) => {
+        loginContainer.style.display = "none";
+      });
+
+      socket.on("validation failure", (msg) => {
+        // TODO: Do stuff like tell the user that their name is taken
+      });
+    </script>
+  </body>
+</html>
