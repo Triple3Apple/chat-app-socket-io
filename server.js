@@ -16,7 +16,6 @@ const { v4: uuidv4 } = require('uuid');
 app.use(express.static('public'));
 
 var d = new Date();
-
 var users = [];
 
 app.get('/', (req, res) => {
@@ -26,40 +25,56 @@ app.get('/', (req, res) => {
 
 // Listen on the connection event for incoming sockets and log it to the console.
 io.on('connection', (socket) => {
-    console.log('A user has connected');
+    console.log('A viewer has connected to the website @' + getTime());
 
-    let connectedTime = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-    // io.emit('chat message', `${connectedTime} ~ A user has connected!`);
+    // message request
+    socket.on('chat message', (msg, name) => {
 
-    socket.on('chat message', (msg) => {
-        let time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        // If not in users (server got refreshed) readd user to users array
+        if (users.some(u => u.displayName === name) === false) {
+
+            // add to users array
+            let user = {
+                displayName: name
+            }
+            // add name to server user records
+            users.push(user);
+
+        }
+
+        let user = users.filter(u => u.displayName === socket.id)[0];
+
+        if (!user) {
+            console.log('user is NULL');
+        }
+
+        let time = getTime();
         console.log(`message (${time}): ${msg}`);
-        io.emit('chat message', `${time} ~ ${msg}`);
+        io.emit('chat message', `${time} ~ ${user.displayName} ~ ${msg}`);
     });
 
     // Below activates when user closes the window (disconnect event)
     socket.on('disconnect', () => {
         console.log('A user has disconnected :C');
 
-        let user = users.find(u => u.displayName === socket.id);
+        let user = users.filter(u => u.displayName === socket.id)[0];
 
+        let time = getTime();
         // Check if undefined
-        if (typeof user === undefined) {
+        if (!user) {
             console.error('could not find user that disconnected');
+            io.emit('chat message', `${time} ~ Someone has disconnected!`);
             return;
         }
 
         let name = user.displayName;
 
         // Remove user from users array
-        // users.splice(u => u.displayName === socket.id);
-
         let newUserArr = users.filter(u => u.displayName != socket.id);
         users = [...newUserArr];
 
         console.log('removed user, current users:' + users.length);
 
-        let time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
         io.emit('chat message', `${time} ~ ${name} has disconnected!`);
     });
 
@@ -75,8 +90,7 @@ io.on('connection', (socket) => {
             console.log('validation success for name: ' + name);
 
             let user = {
-                displayName: name,
-                id: uuidv4().toString()
+                displayName: name
             }
             // add name to server user records
             users.push(user);
@@ -85,15 +99,34 @@ io.on('connection', (socket) => {
             console.log('User list: ' + users);
 
 
-            io.emit('validation success');
-            io.emit('chat message', `${connectedTime} ~ ${user.displayName} has connected!`);
+            io.emit('validation success', name);
+            io.emit('chat message', `${getTime()} ~ ${user.displayName} has connected!`);
         }
     })
 });
 
-// const getTime = () => {
+const getTime = () => {
+    let hours = formatTime(d.getHours());
+    let minutes = formatTime(d.getMinutes());
+    let seconds = formatTime(d.getSeconds());
 
-// }
+    return (hours + ':' + minutes + ':' + seconds);
+}
+
+function formatTime(time) {
+    let formatted;
+    if (time < 10) {
+        if (time === 0) {
+            formatted = '00';
+        } else {
+            formatted = '0' + time;
+        }
+    } else {
+        formatted = time;
+    }
+
+    return formatted;
+}
 
 server.listen(3000, () => {
     console.log('listening on *:3000');

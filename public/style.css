@@ -9,10 +9,23 @@ body {
 .login-container-bg {
   position: absolute;
   display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: rgba(79, 96, 192, 0.726);
   width: 100vw;
   height: 100vh;
   z-index: 10;
+}
+
+.login-container {
+  background-color: rgb(109, 109, 109);
+  border-radius: 25px 100px / 120px;
+  padding: 100px;
+  margin: 200px;
+}
+
+#login-form label {
+  font-size: 20px;
 }
 
 #form {
