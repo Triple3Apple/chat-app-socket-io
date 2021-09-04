@@ -3,7 +3,16 @@
 ## Chat App Using Socket.io & Express
 
 ### A online chat app utilizing dynamic client-server interaction using Socket.io. 
-<br/>
+
+
+### Features:
+
+* Sending messages in a public chat
+* Login page, so you can enter a username + username validation (no duplicate usernames)
+* Chat time stamps for when users message, join and leave
+* Resposive design
+
+
 This app only runs locally as of now (looking forward to putting it online)
 
 #### Untilized: Node.js, Express.js, Socket.io
