@@ -6,58 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
     <title>Socket.io Chat App</title>
-    <!-- <style>
-      body {
-        margin: 0;
-        padding-bottom: 3rem;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
-      }
-
-      #form {
-        background: rgba(0, 0, 0, 0.15);
-        padding: 0.25rem;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        height: 3rem;
-        box-sizing: border-box;
-        backdrop-filter: blur(10px);
-      }
-      #input {
-        border: none;
-        padding: 0 1rem;
-        flex-grow: 1;
-        border-radius: 2rem;
-        margin: 0.25rem;
-      }
-      #input:focus {
-        outline: none;
-      }
-      #form > button {
-        background: #333;
-        border: none;
-        padding: 0 1rem;
-        margin: 0.25rem;
-        border-radius: 3px;
-        outline: none;
-        color: #fff;
-      }
-
-      #messages {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-      }
-      #messages > li {
-        padding: 0.5rem 1rem;
-      }
-      #messages > li:nth-child(odd) {
-        background: #efefef;
-      }
-    </style> -->
   </head>
   <body>
     <div class="login-container-bg">
@@ -72,6 +20,9 @@
           />
           <button>Start Chatting</button>
         </form>
+        <p id="invalid-text" style="color: red; font-size: 15px">
+          Invalid name
+        </p>
       </div>
     </div>
     <ul id="messages"></ul>
@@ -90,6 +41,7 @@
       var nameInput = document.getElementById("display-name");
       var loginContainer =
         document.getElementsByClassName("login-container-bg")[0];
+      var invalidText = document.getElementById("invalid-text");
 
       var user = {
         displayName: null,
@@ -122,14 +74,33 @@
         window.scrollTo(0, document.body.scrollHeight);
       });
 
+      socket.on("join chat message", (msg) => {
+        var item = document.createElement("li");
+        item.textContent = msg;
+        item.style.color = "#57CC99";
+
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      socket.on("leave chat message", (msg) => {
+        var item = document.createElement("li");
+        item.textContent = msg;
+        item.style.color = "#FF4848";
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
       // Name valid event from server
       socket.on("validation success", (msg) => {
         loginContainer.style.display = "none";
         user.displayName = msg;
+        invalidText.style.visibility = "hidden";
       });
 
       socket.on("validation failure", (msg) => {
         // TODO: Do stuff like tell the user that their name is taken
+        invalidText.style.visibility = "visible";
       });
     </script>
   </body>

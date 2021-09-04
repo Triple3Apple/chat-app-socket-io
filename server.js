@@ -15,7 +15,7 @@ const { v4: uuidv4 } = require('uuid');
 // Used this to load css file
 app.use(express.static('public'));
 
-var d = new Date();
+// var d = new Date();
 var users = [];
 
 app.get('/', (req, res) => {
@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
         // Check if undefined
         if (!user) {
             console.error('could not find user that disconnected');
-            io.emit('chat message', `${time} ~ Someone has disconnected!`);
+            io.emit('leave chat message', `${time} ~ Someone has disconnected!`);
             return;
         }
 
@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
 
         console.log('removed user, current users:' + users.length);
 
-        io.emit('chat message', `${time} ~ ${name} has disconnected!`);
+        io.emit('leave chat message', `${time} ~ ${name} has disconnected!`);
     });
 
     // Validate name
@@ -84,7 +84,7 @@ io.on('connection', (socket) => {
         if (users.some(u => u.displayName === name)) {
             console.log('validation failed for name: ' + name);
 
-            io.emit('validation fail');
+            io.emit('validation failure');
         } else {
             // Validation Success
             console.log('validation success for name: ' + name);
@@ -100,12 +100,13 @@ io.on('connection', (socket) => {
 
 
             io.emit('validation success', name);
-            io.emit('chat message', `${getTime()} ~ ${user.displayName} has connected!`);
+            io.emit('join chat message', `${getTime()} ~ ${user.displayName} has connected!`);
         }
     })
 });
 
 const getTime = () => {
+    let d = new Date();
     let hours = formatTime(d.getHours());
     let minutes = formatTime(d.getMinutes());
     let seconds = formatTime(d.getSeconds());
