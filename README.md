@@ -25,10 +25,10 @@ This app only runs locally as of now (looking forward to putting it online)
 
 ### How to run Locally
 
-1. Clone Repo
-2. run ``` npm install ``` in the terminal when your inside the repository to install all the dependencies
-3. run ``` nodemon server.js ``` in the terminal to start up the chat-app
+1. Clone this Repository in your desired directory by typing ``` git clone https://github.com/Triple3Apple/chat-app-socket-io.git ```
+2. run ``` npm install ``` in the terminal when you're inside the repository to install all the dependencies
+3. run ``` nodemon server.js ``` in the terminal to start up the chat-app (server)
 4. Go to ``` http://localhost:3000/ ``` on your browser (Preferably Chrome)
-5. Have fun :)
-##### To close the server/app, press the follwing keys together ``` CTRL ``` + ``` C ``` in the terminal
+5. Open other browser tabs/windows and go to ``` http://localhost:3000/ ``` again, login with a username and start messageing yourself (How fun and lonely!)
+6. To **close** the chat-app (server), press the following keys together ``` CTRL ``` + ``` C ``` in the same terminal where you started the chat-app (server) [terminal from Step 3]
 
